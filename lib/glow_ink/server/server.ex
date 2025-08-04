@@ -15,19 +15,30 @@ defmodule GlowInk.Server do
     handle_incoming(socket)
   end
 
-  def handle_incoming(socket) do
+  defp handle_incoming(socket) do
     {:ok, client} = :gen_tcp.accept(socket)
-
-    Logger.info("Received client connection.")
-    :gen_tcp.close(client)
-    Logger.info("Closed client connection.")
-
+    serve(client)
     handle_incoming(socket)
   end
 
-  def handle_info({:tcp, _, data}, state) do
-    Logger.info("Received #{data}")
+  defp serve(client) do
+    client
+    |> read_packet()
+    |> handle_packet(client)
 
-    {:noreply, state}
+    :gen_tcp.close(client)
+  end
+
+  defp read_packet(client) do
+    {:ok, data} = :gen_tcp.recv(client, 0)
+    data
+  end
+
+  defp handle_packet(data, _client) do
+
+  end
+
+  defp read_varint(data) do
+
   end
 end
